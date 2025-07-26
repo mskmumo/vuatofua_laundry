@@ -1,0 +1,34 @@
+# Configuration files with sensitive data
+# mail_config.php
+# config.php
+.env
+
+# Vendor directory
+# /vendor/
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+
+# Logs and databases
+*.log
+*.sql
+*.sqlite
+
+# Except the schema file
+!sql/vuatofua_schema.sql
+
+# Temporary files
+*.tmp
+*.temp

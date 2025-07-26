@@ -40,8 +40,44 @@ mysql -u your_username -p your_database_name < sql/vuatofua_schema.sql
 - Copy `config.example.php` to `config.php`
 - Update the database credentials in `config.php`
 
-4. Configure email settings:
-- Update `mail_config.php` with your SMTP details
+4. Configure Email Settings (PHPMailer):
+
+### Gmail SMTP Configuration
+1. Generate Gmail App Password:
+   - Visit https://myaccount.google.com/security
+   - Enable 2-Step Verification if not already enabled
+   - Go to "App Passwords" section
+   - Select "Mail" and your device
+   - Click "Generate"
+   - Copy the 16-digit app password
+
+2. Update Email Configuration:
+   - Locate `mail_config.php`
+   - Update the following settings:
+     ```php
+     $mail->Host = 'smtp.gmail.com';
+     $mail->Username = 'your-email@gmail.com';
+     $mail->Password = 'your-16-digit-app-password';
+     ```
+
+⚠️ Security Important Notes:
+- NEVER commit real email credentials to the repository
+- Create a `mail_config.php` from the `mail_config.example.php` template
+- Add `mail_config.php` to your `.gitignore` file
+- Use environment variables or secured configuration files for production
+
+### Email Configuration Example:
+```php
+// mail_config.example.php
+$mail = new PHPMailer(true);
+$mail->isSMTP();
+$mail->Host = 'smtp.gmail.com';
+$mail->SMTPAuth = true;
+$mail->Username = 'your-email@gmail.com'; // Replace with your Gmail
+$mail->Password = 'your-app-password';    // Replace with your app password
+$mail->SMTPSecure = PHPMailer::ENCRYPTION_STARTTLS;
+$mail->Port = 587;
+```
 
 5. Set up a web server (Apache/Nginx) pointing to the project directory
 
@@ -142,6 +178,27 @@ vuatofua/
 - Rate limiting
 - SQL injection prevention
 - XSS protection
+
+### Secure Configuration Management
+
+1. Protected Files
+   ```
+   # .gitignore
+   mail_config.php
+   config.php
+   .env
+   ```
+
+2. Configuration Templates
+   - Use `*.example.php` files as templates
+   - Document all configuration options
+   - Never commit sensitive credentials
+
+3. Production Security
+   - Use environment variables
+   - Secure credential storage
+   - Regular security audits
+   - Encrypted configuration
 
 ## Database Schema
 
