@@ -97,9 +97,9 @@ CREATE TABLE `user_sessions` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Pre-populate with some data for testing
--- Admin User (password: admin123)
+-- Admin User (password: Admin123)
 INSERT INTO `users` (`name`, `phone`, `email`, `password`, `role`, `email_verified`, `phone_verified`, `status`) VALUES
-('Admin User', '0700000000', 'admin@vuatofua.com', '$2y$10$1g.gB6v4.V4.gY3g5h6i7o8j9k0l.mN.oP.qR.sT.uV.wX.yZ.aB', 'admin', 1, 1, 'active');
+('Admin User', '0700000000', 'admin@vuatofua.com', '$argon2id$v=19$m=65536,t=4,p=3$ZEdWc2RITjBjbVZ1WjNSb$7vF7Iyk4Dfup0RkiOS99Cq0KP9c1qMwTS1pPz8mN8GA', 'admin', 1, 1, 'active');
 
 -- Sample Drop-off Locations
 INSERT INTO `drop_off_locations` (`name`, `address`, `latitude`, `longitude`) VALUES
