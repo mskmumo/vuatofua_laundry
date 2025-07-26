@@ -1,0 +1,76 @@
+/* Custom accent styles matching the image design */
+
+/* Accent underline for headings */
+h1::after {
+    content: '';
+    display: block;
+    width: 80px;
+    height: 4px;
+    background: var(--accent-color);
+    margin-top: 20px;
+    margin-bottom: 30px;
+}
+
+/* Navigation hover effect */
+#home-header nav ul li a {
+    position: relative;
+}
+
+#home-header nav ul li a::after {
+    content: '';
+    position: absolute;
+    width: 0;
+    height: 2px;
+    bottom: -5px;
+    left: 50%;
+    background: var(--accent-color);
+    transition: all 0.3s ease;
+    transform: translateX(-50%);
+}
+
+#home-header nav ul li a:hover::after {
+    width: 100%;
+}
+
+/* Active navigation item */
+#home-header nav ul li a.active {
+    color: var(--title-color);
+}
+
+#home-header nav ul li a.active::after {
+    width: 100%;
+}
+
+/* Card hover effects with accent color */
+.service-card:hover {
+    border-color: var(--accent-color);
+    background: var(--light-accent);
+}
+
+/* Stat cards with accent */
+.stat-card h3 {
+    color: var(--accent-color);
+}
+
+.stat-card .display-4 {
+    color: var(--text-color);
+    font-size: 2.5rem;
+    margin: 1rem 0;
+}
+
+/* Form focus states */
+input:focus, textarea:focus, select:focus {
+    border-color: var(--accent-color) !important;
+    box-shadow: 0 0 0 2px rgba(196, 164, 132, 0.1);
+}
+
+/* Button accent styles */
+.btn-nav {
+    border: 1px solid var(--accent-color);
+    background: transparent;
+}
+
+.btn-nav:hover {
+    background: var(--accent-color);
+    color: var(--dark-bg) !important;
+}

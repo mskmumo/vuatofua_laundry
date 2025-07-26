@@ -1,0 +1,70 @@
+/* Animation and JavaScript-related styles */
+
+/* Sticky header */
+.sticky {
+    background: rgba(0, 38, 81, 0.98) !important;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    padding: 0.7rem 0 !important;
+}
+
+/* Form validation styles */
+.error {
+    border-color: #dc3545 !important;
+    animation: shake 0.5s linear;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 0.875rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+/* Animation keyframes */
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-10px); }
+    50% { transform: translateX(10px); }
+    75% { transform: translateX(-10px); }
+    100% { transform: translateX(0); }
+}
+
+/* Service card transitions */
+.service-card {
+    transition: transform 0.3s ease, box-shadow 0.3s ease !important;
+}
+
+/* Statistics animation */
+.display-4 {
+    transition: color 0.3s ease;
+}
+
+/* Smooth scroll behavior */
+html {
+    scroll-behavior: smooth;
+    scroll-padding-top: 80px; /* Account for fixed header */
+}
+
+/* Loading animation for forms */
+.loading {
+    position: relative;
+    pointer-events: none;
+}
+
+.loading::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 2px solid rgba(255,255,255,0.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s linear infinite;
+    transform: translate(-50%, -50%);
+}
+
+@keyframes spin {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
