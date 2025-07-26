@@ -29,6 +29,7 @@ body {
     flex-direction: column;
     min-height: 100vh;
     scroll-behavior: smooth;
+    padding-top: 80px; /* Adjust this value based on the actual height of your header */
 }
 
 .container {
@@ -501,6 +502,45 @@ input:-webkit-autofill:focus {
     color: var(--primary-color);
 }
 
+/* Enhanced Dashboard Styles (Magic UI inspired) */
+.dashboard-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.dashboard-grid .card {
+    background: linear-gradient(145deg, #2e2e2e, #242424);
+    border: 1px solid #444;
+    border-radius: 12px;
+    padding: 1.5rem;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+.dashboard-grid .card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
+}
+
+.dashboard-grid .card h3 {
+    margin-top: 0;
+    color: #f1f1f1;
+    border-bottom: 1px solid #444;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.dashboard-grid .card p {
+    color: #ccc;
+}
+
+.dashboard-grid .card .btn {
+    margin-top: 1rem;
+    display: inline-block;
+}
+
 /* --- Alert Styles --- */
 .alert {
     padding: 15px;
@@ -665,9 +705,9 @@ input:-webkit-autofill:focus {
 main {
     flex: 1 1 auto;
     width: 100%;
-    margin-top: 70px; /* Adjust based on header height */
+    margin-top: 0px; /* Adjust based on header height */
     padding-bottom: 2rem;
-    min-height: calc(100vh - 70px - 5rem); /* viewport height - header - footer */
+    min-height: calc(100vh - 5rem); /* viewport height - footer */
 }
 
 /* --- Footer Styles --- */
@@ -710,4 +750,13 @@ footer#main-footer {
     .hero-content h1 {
         font-size: 2.5rem;
     }
+}
+
+/* Fix for form input and dropdown visibility in dark theme */
+input, 
+textarea, 
+select {
+    background-color: #333 !important;
+    color: #f1f1f1 !important;
+    border: 1px solid #555 !important;
 }

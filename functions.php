@@ -290,5 +290,13 @@ function send_contact_confirmation_email($to, $name) {
         return false;
     }
 }
-
+/**
+ * Checks if the logged-in user is an administrator.
+ *
+ * @return bool True if user is an admin, false otherwise.
+ */
+function is_admin()
+{
+    return isset($_SESSION['role']) && $_SESSION['role'] === 'admin';
+}
 ?>

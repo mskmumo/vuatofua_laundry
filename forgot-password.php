@@ -75,7 +75,8 @@ $page_title = 'Forgot Password - VuaToFua';
 include 'templates/header.php';
 ?>
 <main>
-    <div class="container" id="forgot-password-container">
+    <main class="main-content">
+<div class="container" id="forgot-password-container">
         <div class="form-container">
             <h2>Reset Your Password</h2>
             <?php if (!empty($error)): ?>
@@ -92,17 +93,8 @@ include 'templates/header.php';
                 <div class="form-group">
                     <label for="email">Email Address</label>
                     <input type="email" name="email" id="email" class="form-control" 
-                           required autocomplete="email" 
-                           pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
-                           title="Please enter a valid email address">
-                </div>
-                <button type="submit" class="btn">Send Reset Link</button>
-                <div class="form-links">
-                    <a href="login.php">Back to Login</a>
-                </div>
-            </form>
         </div>
     </div>
 </main>
 
-<?php include 'templates/footer.php'; ?>
+<?php require_once 'templates/footer.php'; ?>

@@ -10,6 +10,8 @@ CREATE TABLE `users` (
   `password` varchar(255) NOT NULL,
   `role` enum('customer','admin') NOT NULL DEFAULT 'customer',
   `status` enum('active','inactive','suspended') NOT NULL DEFAULT 'active',
+  `account_locked` tinyint(1) NOT NULL DEFAULT 0,
+  `account_locked_until` datetime DEFAULT NULL,
   `email_verified` tinyint(1) NOT NULL DEFAULT 0,
   `phone_verified` tinyint(1) NOT NULL DEFAULT 0,
   `verification_token` varchar(255) DEFAULT NULL,
@@ -94,6 +96,17 @@ CREATE TABLE `user_sessions` (
   KEY `idx_user_id` (`user_id`),
   KEY `idx_expires_at` (`expires_at`),
   CONSTRAINT `user_sessions_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Login Attempts Table: Tracks failed login attempts for rate limiting
+CREATE TABLE `login_attempts` (
+  `attempt_id` int(11) NOT NULL AUTO_INCREMENT,
+  `email` varchar(255) NOT NULL,
+  `ip_address` varchar(45) DEFAULT NULL,
+  `attempt_time` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`attempt_id`),
+  KEY `idx_email_time` (`email`, `attempt_time`),
+  KEY `idx_ip_time` (`ip_address`, `attempt_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Pre-populate with some data for testing

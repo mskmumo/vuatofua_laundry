@@ -43,7 +43,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if (empty($errors)) {
         $conn = db_connect();
         // Check if email or phone already exists
-        $stmt_check = $conn->prepare("SELECT id FROM users WHERE email = ? OR phone = ?");
+        $stmt_check = $conn->prepare("SELECT user_id FROM users WHERE email = ? OR phone = ?");
         $stmt_check->bind_param("ss", $email, $phone);
         $stmt_check->execute();
         $result_check = $stmt_check->get_result();
@@ -55,7 +55,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $stmt_insert = $conn->prepare("INSERT INTO users (name, email, phone, password, role) VALUES (?, ?, ?, ?, 'customer')");
             $stmt_insert->bind_param("ssss", $name, $email, $phone, $hashed_password);
             if ($stmt_insert->execute()) {
-                log_sms($conn, $conn->insert_id, $phone, "Welcome to VuaToFua! Your account has been created.");
+                $user_id = $conn->insert_id;
+                log_sms($conn, $user_id, $phone, "Welcome to VuaToFua! Your account has been created.");
                 redirect('login.php?registration=success');
             } else {
                 $errors['form'] = "Something went wrong. Please try again later.";
@@ -136,7 +137,8 @@ include 'templates/header.php';
             </div>
         </form>
     </div>
-</div>
+</main>
+
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {

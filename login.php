@@ -38,7 +38,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $error = "Too many failed attempts. Please try again later.";
                 error_log("Login rate limit reached for email: $email, IP: " . $_SERVER['REMOTE_ADDR']);
             } else {
-                $stmt = $conn->prepare("SELECT user_id, name, password, role, account_locked FROM users WHERE email = ?");
+                $stmt = $conn->prepare("SELECT user_id, name, password, role, status, account_locked, account_locked_until FROM users WHERE email = ?");
                 $stmt->bind_param("s", $email);
                 $stmt->execute();
                 $result = $stmt->get_result();
@@ -46,8 +46,10 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 if ($result->num_rows == 1) {
                     $user = $result->fetch_assoc();
                     
-                    if ($user['account_locked']) {
-                        $error = "This account is locked. Please contact support.";
+                    if ($user['status'] !== 'active') {
+                        $error = "This account is " . strtolower($user['status']) . ". Please contact support.";
+                    } else if ($user['account_locked'] && ($user['account_locked_until'] === NULL || strtotime($user['account_locked_until']) > time())) {
+                        $error = "This account is temporarily locked. Please try again later or contact support.";
                         error_log("Login attempt on locked account: $email, IP: " . $_SERVER['REMOTE_ADDR']);
                     } else if (password_verify($password, $user['password'])) {
                         // Successful login
@@ -65,9 +67,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         $update_stmt->execute();
                         $update_stmt->close();
                         
-                        // Log session
+                        // Regenerate session ID for security
+                        session_regenerate_id(true);
+
+                        // Log the new session
+                        $new_session_id = session_id();
+                        $ip_address = $_SERVER['REMOTE_ADDR'];
+                        $user_agent = $_SERVER['HTTP_USER_AGENT'];
+
                         $session_stmt = $conn->prepare("INSERT INTO user_sessions (session_id, user_id, ip_address, user_agent) VALUES (?, ?, ?, ?)");
-                        $session_stmt->bind_param("siss", session_id(), $user['user_id'], $_SERVER['REMOTE_ADDR'], $_SERVER['HTTP_USER_AGENT']);
+                        $session_stmt->bind_param("siss", $new_session_id, $user['user_id'], $ip_address, $user_agent);
                         $session_stmt->execute();
                         $session_stmt->close();
                         
@@ -97,7 +106,8 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 $page_title = 'Login - VuaToFua';
 include 'templates/header.php';
 ?>
-<main>
+
+<main class="main-content">
     <div class="container" id="login-form-container">
         <div class="form-container">
             <h2>Login to Your Account</h2>
@@ -134,8 +144,7 @@ include 'templates/header.php';
                 <button type="submit" class="btn">Login</button>
                 <div class="form-links">
                     <a href="forgot-password.php">Forgot Password?</a>
-                    <span class="separator">|</span>
-                    <a href="register.php">Create Account</a>
+                    <p class="text-center">Don't have an account? <a href="register.php">Sign up</a></p>
                 </div>
             </form>
             
