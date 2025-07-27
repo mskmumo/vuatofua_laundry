@@ -109,6 +109,71 @@ CREATE TABLE `login_attempts` (
   KEY `idx_ip_time` (`ip_address`, `attempt_time`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Contact Requests Table: Stores contact form submissions
+CREATE TABLE `contact_requests` (
+  `contact_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) DEFAULT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `subject` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `status` enum('unread','read','replied') NOT NULL DEFAULT 'unread',
+  `priority` enum('low','medium','high','urgent') NOT NULL DEFAULT 'medium',
+  `admin_notes` text DEFAULT NULL,
+  `read_by` int(11) DEFAULT NULL,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `replied_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`contact_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_status` (`status`),
+  KEY `idx_priority` (`priority`),
+  KEY `idx_read_by` (`read_by`),
+  KEY `idx_created_at` (`created_at`),
+  CONSTRAINT `contact_requests_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE SET NULL,
+  CONSTRAINT `contact_requests_ibfk_2` FOREIGN KEY (`read_by`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Contact Replies Table: Stores admin replies to contact requests
+CREATE TABLE `contact_replies` (
+  `reply_id` int(11) NOT NULL AUTO_INCREMENT,
+  `contact_id` int(11) NOT NULL,
+  `admin_id` int(11) NOT NULL,
+  `reply_subject` varchar(255) NOT NULL,
+  `reply_message` text NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`reply_id`),
+  KEY `idx_contact_id` (`contact_id`),
+  KEY `idx_admin_id` (`admin_id`),
+  KEY `idx_created_at` (`created_at`),
+  CONSTRAINT `contact_replies_ibfk_1` FOREIGN KEY (`contact_id`) REFERENCES `contact_requests` (`contact_id`) ON DELETE CASCADE,
+  CONSTRAINT `contact_replies_ibfk_2` FOREIGN KEY (`admin_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Notifications Table: Stores user notifications
+CREATE TABLE `notifications` (
+  `notification_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `type` enum('contact_read','contact_replied','order_update','system','general') NOT NULL DEFAULT 'general',
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `related_id` int(11) DEFAULT NULL,
+  `related_type` enum('contact','order','user','system') DEFAULT NULL,
+  `is_read` tinyint(1) NOT NULL DEFAULT 0,
+  `read_at` timestamp NULL DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`notification_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_type` (`type`),
+  KEY `idx_is_read` (`is_read`),
+  KEY `idx_created_at` (`created_at`),
+  CONSTRAINT `notifications_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- Pre-populate with some data for testing
 -- Admin User (password: Admin123)
 INSERT INTO `users` (`name`, `phone`, `email`, `password`, `role`, `email_verified`, `phone_verified`, `status`) VALUES

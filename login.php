@@ -71,15 +71,28 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                         session_regenerate_id(true);
 
                         // Log the new session
-                        $new_session_id = session_id();
+                        $session_token = $_SESSION['token']; // Use the token we generated earlier
                         $ip_address = $_SERVER['REMOTE_ADDR'];
                         $user_agent = $_SERVER['HTTP_USER_AGENT'];
+                        $expires_at = date('Y-m-d H:i:s', time() + (86400 * 30)); // Expires in 30 days
 
-                        $session_stmt = $conn->prepare("INSERT INTO user_sessions (session_id, user_id, ip_address, user_agent) VALUES (?, ?, ?, ?)");
-                        $session_stmt->bind_param("siss", $new_session_id, $user['user_id'], $ip_address, $user_agent);
+                        $session_stmt = $conn->prepare("INSERT INTO user_sessions (user_id, token, ip_address, user_agent, expires_at) VALUES (?, ?, ?, ?, ?)");
+                        $session_stmt->bind_param("issss", $user['user_id'], $session_token, $ip_address, $user_agent, $expires_at);
                         $session_stmt->execute();
                         $session_stmt->close();
                         
+                        // Handle "Remember Me" functionality
+                        $token = bin2hex(random_bytes(32)); // Always generate a token
+                        if (isset($_POST['remember_me'])) {
+                            $expiry_date = date('Y-m-d H:i:s', time() + (86400 * 30)); // 30 days
+
+                            $remember_stmt = $conn->prepare("INSERT INTO remember_me_tokens (user_id, token, expires_at) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE token = ?, expires_at = ?");
+                            $remember_stmt->bind_param("issss", $user['user_id'], $token, $expiry_date, $token, $expiry_date);
+                            $remember_stmt->execute();
+                            $remember_stmt->close();
+
+                            setcookie('remember_me', $token, time() + (86400 * 30), "/", "", true, true);
+                        }
                         if ($user['role'] == 'admin') {
                             redirect('admin/index.php');
                         } else {

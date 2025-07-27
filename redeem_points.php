@@ -54,6 +54,7 @@ $page_title = 'Redeem Points - VuaToFua';
 require_once 'templates/header.php';
 ?>
 
+
     <div class="container" id="redeem-points-container">
         <div class="form-container">
             <h2>Redeem Loyalty Points</h2>

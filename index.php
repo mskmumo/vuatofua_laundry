@@ -1,6 +1,8 @@
 <?php
 require_once 'config.php';
 require_once 'functions.php';
+
+secure_session_start();
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -10,6 +12,53 @@ require_once 'functions.php';
     <title>VuaToFua - Premium Laundry Services in Nairobi</title>
     <link rel="stylesheet" href="css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <style>
+        .alert {
+            padding: 1rem;
+            margin: 1rem 0;
+            border-radius: 6px;
+            font-weight: 500;
+        }
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .alert-danger {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .contact-form .form-group {
+            margin-bottom: 1rem;
+        }
+        .contact-form input, .contact-form textarea {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 1rem;
+        }
+        .contact-form button[type="submit"] {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        .contact-form button[type="submit"]:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        .contact-form button[type="submit"]:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+    </style>
 </head>
 <body>
 
@@ -26,6 +75,7 @@ require_once 'functions.php';
                     <li><a href="locations.php">Locations</a></li>
                     <?php if (is_logged_in()): ?>
                         <li><a href="dashboard.php" class="btn-nav">Dashboard</a></li>
+                        <li><a href="customer/my_contacts.php" class="btn-nav">My Contacts</a></li>
                         <li><a href="logout.php" class="btn-nav">Logout</a></li>
                     <?php else: ?>
                         <li><a href="login.php" class="btn-nav">Login</a></li>
@@ -98,20 +148,32 @@ require_once 'functions.php';
                 <p><i class="fas fa-phone"></i> +254 700 000 000</p>
                 <p><i class="fas fa-envelope"></i> contact@vuatofua.com</p>
             </div>
-            <div id="form-status"></div>
-            <form action="contact_handler.php" method="POST" class="contact-form">
-                <h3>Send us a Message</h3>
-                <div class="form-group">
-                    <input type="text" name="name" placeholder="Your Name" required>
-                </div>
-                <div class="form-group">
-                    <input type="email" name="email" placeholder="Your Email" required>
-                </div>
-                <div class="form-group">
-                    <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
-                </div>
-                <button type="submit" class="btn">Send Message</button>
-            </form>
+            <div>
+                <div id="form-status"></div>
+                <form id="contact-form" action="contact_handler.php" method="POST" class="contact-form">
+                    <h3>Send us a Message</h3>
+                    <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                    
+                    <div class="form-group">
+                        <input type="text" name="name" placeholder="Your Name" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="email" name="email" placeholder="Your Email" required>
+                    </div>
+                    <div class="form-group">
+                        <input type="text" name="subject" placeholder="Subject" required>
+                    </div>
+                    <div class="form-group">
+                        <textarea name="message" rows="5" placeholder="Your Message" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">
+                        <span class="btn-text">Send Message</span>
+                        <span class="btn-loading" style="display: none;">
+                            <i class="fas fa-spinner fa-spin"></i> Sending...
+                        </span>
+                    </button>
+                </form>
+            </div>
         </div>
     </section>
 
@@ -127,18 +189,25 @@ require_once 'functions.php';
             const status = params.get('status');
             const formStatusDiv = document.getElementById('form-status');
 
+            // Handle URL status parameters
             if (status) {
                 let message = '';
                 let messageClass = '';
 
                 if (status === 'success') {
-                    message = 'Thank you! Your message has been sent successfully.';
+                    message = 'Thank you! Your message has been sent successfully. We will get back to you soon.';
                     messageClass = 'alert-success';
                 } else if (status === 'error') {
                     message = 'Sorry, something went wrong. Please try again later.';
                     messageClass = 'alert-danger';
                 } else if (status === 'invalid_email') {
                     message = 'Please enter a valid email address.';
+                    messageClass = 'alert-danger';
+                } else if (status === 'missing_fields') {
+                    message = 'Please fill in all required fields.';
+                    messageClass = 'alert-danger';
+                } else if (status === 'csrf_error') {
+                    message = 'Security error. Please refresh the page and try again.';
                     messageClass = 'alert-danger';
                 }
 
@@ -150,6 +219,54 @@ require_once 'functions.php';
                         history.pushState({path: cleanUrl}, '', cleanUrl);
                     }
                 }
+            }
+
+            // Handle form submission with AJAX
+            const contactForm = document.getElementById('contact-form');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const submitBtn = this.querySelector('button[type="submit"]');
+                    const btnText = submitBtn.querySelector('.btn-text');
+                    const btnLoading = submitBtn.querySelector('.btn-loading');
+                    
+                    // Show loading state
+                    submitBtn.disabled = true;
+                    btnText.style.display = 'none';
+                    btnLoading.style.display = 'inline';
+                    
+                    // Clear previous status
+                    formStatusDiv.innerHTML = '';
+                    
+                    // Submit form data
+                    const formData = new FormData(this);
+                    
+                    fetch('contact_handler.php', {
+                        method: 'POST',
+                        body: formData
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        let messageClass = data.success ? 'alert-success' : 'alert-danger';
+                        formStatusDiv.innerHTML = `<div class="alert ${messageClass}">${data.message}</div>`;
+                        
+                        if (data.success) {
+                            // Reset form on success
+                            contactForm.reset();
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        formStatusDiv.innerHTML = '<div class="alert alert-danger">An error occurred. Please try again.</div>';
+                    })
+                    .finally(() => {
+                        // Reset button state
+                        submitBtn.disabled = false;
+                        btnText.style.display = 'inline';
+                        btnLoading.style.display = 'none';
+                    });
+                });
             }
         });
     </script>

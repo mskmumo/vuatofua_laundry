@@ -34,6 +34,13 @@ require_once 'templates/header.php';
                     <a href="admin/loyalty.php" class="btn">Go to Loyalty Stats</a>
                 </div>
                 <div class="card">
+                    <h3>Contact Management</h3>
+                    <p>Manage customer contact requests and messages.</p>
+                    <a href="admin/manage_contacts.php" class="dashboard-link">
+                        <i class="fas fa-envelope-open"></i> Manage Contact Requests
+                    </a>
+                </div>
+                <div class="card">
                     <h3>View Messages</h3>
                     <p>Read messages submitted through the contact form.</p>
                     <a href="admin/view_messages.php" class="btn">View Messages</a>
@@ -50,6 +57,15 @@ require_once 'templates/header.php';
                     <p>Your current balance is: <strong><?php echo $loyalty_points; ?></strong> points.</p>
                     <a href="redeem_points.php" class="btn">Redeem Points</a>
                 </div>
+                <div class="card" id="customer-contacts-card">
+                    <h3>My Contact Requests</h3>
+                    <p>View your submitted contact requests and their status.</p>
+                    <a href="customer/my_contacts.php" class="dashboard-link">
+                        <i class="fas fa-envelope"></i> My Contact Requests
+                    </a>
+                </div>
+                
+                
             <?php endif; ?>
         </div>
     </div>

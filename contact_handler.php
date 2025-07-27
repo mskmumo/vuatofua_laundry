@@ -2,74 +2,143 @@
 require_once 'config.php';
 require_once 'functions.php';
 
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    // Sanitize user input
-    $name = sanitize_input($_POST['name']);
-    $email = sanitize_input($_POST['email']);
-    $message = sanitize_input($_POST['message']);
+secure_session_start();
 
-    // Validate inputs
-    if (empty($name) || empty($email) || empty($message)) {
-        redirect('index.php#contact?status=empty_fields');
-    }
+header('Content-Type: application/json');
 
-    // Validate email format
-    if (!validate_email($email)) {
-        redirect('index.php#contact?status=invalid_email');
-    }
+if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+    http_response_code(405);
+    echo json_encode(['success' => false, 'message' => 'Method not allowed']);
+    exit;
+}
 
-    // Establish database connection
+// Verify CSRF token
+if (!isset($_POST['csrf_token']) || !verify_csrf_token($_POST['csrf_token'])) {
+    http_response_code(403);
+    echo json_encode(['success' => false, 'message' => 'Invalid security token']);
+    exit;
+}
+
+// Get and sanitize input data
+$name = sanitize_input($_POST['name'] ?? '');
+$email = sanitize_input($_POST['email'] ?? '');
+$phone = sanitize_input($_POST['phone'] ?? '');
+$subject = sanitize_input($_POST['subject'] ?? '');
+$message = sanitize_input($_POST['message'] ?? '');
+
+// Validation
+$errors = [];
+
+if (empty($name)) {
+    $errors[] = 'Name is required';
+}
+
+if (empty($email)) {
+    $errors[] = 'Email is required';
+} elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+    $errors[] = 'Please enter a valid email address';
+}
+
+if (empty($subject)) {
+    $errors[] = 'Subject is required';
+}
+
+if (empty($message)) {
+    $errors[] = 'Message is required';
+} elseif (strlen($message) < 10) {
+    $errors[] = 'Message must be at least 10 characters long';
+}
+
+if (!empty($phone) && !preg_match('/^[+]?[\d\s\-\(\)]{10,}$/', $phone)) {
+    $errors[] = 'Please enter a valid phone number';
+}
+
+if (!empty($errors)) {
+    http_response_code(400);
+    echo json_encode(['success' => false, 'message' => implode(', ', $errors)]);
+    exit;
+}
+
+try {
     $conn = db_connect();
     
-    // Check if contact_messages table exists, create if it doesn't
-    $create_table_sql = "CREATE TABLE IF NOT EXISTS contact_messages (
-        message_id INT AUTO_INCREMENT PRIMARY KEY,
-        name VARCHAR(255) NOT NULL,
-        email VARCHAR(255) NOT NULL,
-        message TEXT NOT NULL,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-    )";
-    $conn->query($create_table_sql);
-
-    // Prepare and bind
-    $stmt = $conn->prepare("INSERT INTO contact_messages (name, email, message) VALUES (?, ?, ?)");
-    if ($stmt === false) {
-        error_log("Failed to prepare statement: " . $conn->error);
-        redirect('index.php#contact?status=error');
+    // Check if user is logged in to link contact to user account
+    $user_id = null;
+    if (is_logged_in()) {
+        $user_id = $_SESSION['user_id'];
     }
-
-    $stmt->bind_param("sss", $name, $email, $message);
-
-    try {
-        // Execute the statement
-        if ($stmt->execute()) {
-            // Send confirmation email
-            $subject = "Thank you for contacting VuaToFua";
-            $email_message = "Dear $name,\n\nThank you for contacting VuaToFua. We have received your message and will get back to you shortly.\n\nBest regards,\nVuaToFua Team";
-            
-            // Use PHPMailer to send confirmation email
-            try {
-                send_contact_confirmation_email($email, $name);
-            } catch (Exception $e) {
-                error_log("Failed to send confirmation email: " . $e->getMessage());
-                // Continue execution even if email fails
-            }
-
-            // Redirect back to the homepage with a success message
-            redirect('index.php#contact?status=success');
-        } else {
-            error_log("Failed to execute statement: " . $stmt->error);
-            redirect('index.php#contact?status=error');
+    
+    // Determine priority based on keywords in subject/message
+    $priority = 'medium';
+    $urgent_keywords = ['urgent', 'emergency', 'asap', 'immediately', 'critical'];
+    $high_keywords = ['important', 'priority', 'soon', 'quickly'];
+    
+    $combined_text = strtolower($subject . ' ' . $message);
+    
+    foreach ($urgent_keywords as $keyword) {
+        if (strpos($combined_text, $keyword) !== false) {
+            $priority = 'urgent';
+            break;
         }
-    } catch (Exception $e) {
-        error_log("Exception in contact form: " . $e->getMessage());
-        redirect('index.php#contact?status=error');
-    } finally {
+    }
+    
+    if ($priority === 'medium') {
+        foreach ($high_keywords as $keyword) {
+            if (strpos($combined_text, $keyword) !== false) {
+                $priority = 'high';
+                break;
+            }
+        }
+    }
+    
+    // Insert contact request
+    $stmt = $conn->prepare("
+        INSERT INTO contact_requests (user_id, name, email, phone, subject, message, priority) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    ");
+    
+    $stmt->bind_param("issssss", $user_id, $name, $email, $phone, $subject, $message, $priority);
+    
+    if ($stmt->execute()) {
+        $contact_id = $conn->insert_id;
+        
+        // Create notification for admins about new contact request
+        $admin_stmt = $conn->prepare("SELECT user_id FROM users WHERE role = 'admin'");
+        $admin_stmt->execute();
+        $admin_result = $admin_stmt->get_result();
+        
+        $notification_stmt = $conn->prepare("
+            INSERT INTO notifications (user_id, type, title, message, related_id, related_type) 
+            VALUES (?, 'contact_read', ?, ?, ?, 'contact')
+        ");
+        
+        while ($admin = $admin_result->fetch_assoc()) {
+            $title = "New Contact Request";
+            $notification_message = "New contact request from {$name} with subject: {$subject}";
+            $notification_stmt->bind_param("issi", $admin['user_id'], $title, $notification_message, $contact_id);
+            $notification_stmt->execute();
+        }
+        
         $stmt->close();
+        $admin_stmt->close();
+        $notification_stmt->close();
+        
+        echo json_encode([
+            'success' => true, 
+            'message' => 'Thank you for contacting us! We will get back to you soon.',
+            'contact_id' => $contact_id
+        ]);
+    } else {
+        throw new Exception('Failed to save contact request');
+    }
+    
+} catch (Exception $e) {
+    error_log("Contact form error: " . $e->getMessage());
+    http_response_code(500);
+    echo json_encode(['success' => false, 'message' => 'An error occurred. Please try again later.']);
+} finally {
+    if (isset($conn)) {
         $conn->close();
     }
-} else {
-    // If not a POST request, redirect to homepage
-    redirect('index.php');
 }
 ?>
