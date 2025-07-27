@@ -462,7 +462,7 @@ require_once 'header.php';
 }
 </style>
 
-<div class="container">
+<div class="contacts-container-wrapper">
   <div class="dashboard-container">
 
     <!-- Header -->
