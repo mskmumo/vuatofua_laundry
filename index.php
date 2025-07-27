@@ -74,8 +74,10 @@ secure_session_start();
                     <li><a href="#contact">Contact</a></li>
                     <li><a href="locations.php">Locations</a></li>
                     <?php if (is_logged_in()): ?>
-                        <li><a href="dashboard.php" class="btn-nav">Dashboard</a></li>
-                        <li><a href="customer/my_contacts.php" class="btn-nav">My Contacts</a></li>
+                        <li><a href="<?php echo has_role('admin') ? 'admin/index.php' : 'dashboard.php'; ?>" class="btn-nav">Dashboard</a></li>
+                        <?php if (!has_role('admin')): ?>
+                            <li><a href="customer/my_contacts.php" class="btn-nav">My Contacts</a></li>
+                        <?php endif; ?>
                         <li><a href="logout.php" class="btn-nav">Logout</a></li>
                     <?php else: ?>
                         <li><a href="login.php" class="btn-nav">Login</a></li>

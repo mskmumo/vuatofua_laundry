@@ -6,7 +6,7 @@ secure_session_start();
 
 // Redirect to appropriate page based on login status
 if (is_logged_in()) {
-    redirect('my_contacts.php');
+    redirect('../dashboard.php');
 } else {
     redirect('../login.php');
 }

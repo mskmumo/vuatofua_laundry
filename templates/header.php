@@ -22,7 +22,13 @@ $base_path = (isset($is_admin_page) && $is_admin_page) ? '../' : './';
     <header id="main-header">
         <div class="container">
             <div id="branding">
-                <h1><a href="<?php echo $base_path; ?>index.php">VuaToFua</a></h1>
+                <h1><a href="<?php 
+                    if (is_logged_in() && has_role('admin')) {
+                        echo $base_path . 'admin/index.php';
+                    } else {
+                        echo $base_path . 'index.php';
+                    }
+                ?>">VuaToFua</a></h1>
             </div>
             <nav>
                 <ul>
@@ -41,6 +47,7 @@ $base_path = (isset($is_admin_page) && $is_admin_page) ? '../' : './';
                             $dashboard_path = $base_path . 'dashboard.php';
                         ?>
                             <li><a href="<?php echo $dashboard_path; ?>">Dashboard</a></li>
+                            <li><a href="<?php echo $base_path; ?>customer/my_contacts.php" class="btn-nav">My Contacts</a></li>
                         <?php endif; ?>
                         <li><a href="<?php echo $base_path; ?>logout.php" class="btn-nav">Logout</a></li>
                     <?php else: ?>

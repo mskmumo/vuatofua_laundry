@@ -58,18 +58,19 @@ require_once 'header.php';
 ?>
 
 <style>
-/* Simple, Clean Layout */
-body {
-    background-color: #131C21;
-    color: #FFFFFF;
-    font-family: Arial, sans-serif;
-    margin: 0;
-    padding: 20px;
+/* Override main CSS flex properties */
+.main-content {
+    display: block !important;
+    flex-direction: unset !important;
 }
 
-.container {
-    max-width: 1000px;
+/* Contacts Container Layout */
+.contacts-container-wrapper {
+    width: 90%;
+    max-width: 1200px;
     margin: 0 auto;
+    padding: 20px 0;
+    display: block;
 }
 
 .dashboard-container {

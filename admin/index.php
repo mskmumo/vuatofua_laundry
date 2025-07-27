@@ -68,6 +68,17 @@ require_once '../templates/header.php';
         </div>
     </div>
 
+    <!-- Admin Panel Card -->
+    <div class="dashboard-grid" style="margin-bottom: 2rem;">
+        <div class="card" id="admin-actions-card">
+            <h3>Admin Panel</h3>
+            <p>Manage the system.</p>
+            <a href="manage_orders.php" class="btn">Manage Orders</a>
+            <a href="dropoffs.php" class="btn">Manage Drop-offs</a>
+            <a href="loyalty.php" class="btn">Go to Loyalty Stats</a>
+        </div>
+    </div>
+
     <!-- Recent Orders Table -->
     <div class="mt-5">
         <h3 class="mb-3">Recent Orders</h3>

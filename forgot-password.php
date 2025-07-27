@@ -36,7 +36,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $expires = date('Y-m-d H:i:s', strtotime('+1 hour'));
                 
                 // Store reset token in database
-                $update_stmt = $conn->prepare("UPDATE users SET password_reset_token = ?, password_reset_expires = ? WHERE user_id = ?");
+                $update_stmt = $conn->prepare("UPDATE users SET reset_token = ?, reset_token_expires = ? WHERE user_id = ?");
                 $update_stmt->bind_param("ssi", $token, $expires, $user['user_id']);
                 $update_stmt->execute();
                 
