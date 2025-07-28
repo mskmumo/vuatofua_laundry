@@ -75,7 +75,10 @@ require_once '../templates/header.php';
             <p>Manage the system.</p>
             <a href="manage_orders.php" class="btn">Manage Orders</a>
             <a href="dropoffs.php" class="btn">Manage Drop-offs</a>
-            <a href="loyalty.php" class="btn">Go to Loyalty Stats</a>
+            <a href="manage_users.php" class="btn">Manage Users</a>
+            <a href="manage_contacts.php" class="btn">Manage Contacts</a>
+            <a href="payment_settings.php" class="btn">Payment Settings</a>
+            <a href="loyalty.php" class="btn">Loyalty Stats</a>
         </div>
     </div>
 

@@ -184,9 +184,9 @@ $user_name = isset($_SESSION['name']) ? htmlspecialchars($_SESSION['name']) : 'C
         <div class="card">
             <h3>Quick Actions</h3>
             <ul class="quick-actions">
-                <li><a href="new-order.php" class="btn btn-block">+ New Order</a></li>
-                <li><a href="schedule-pickup.php" class="btn btn-block">Schedule Pickup</a></li>
-                <li><a href="customer/address-book.php" class="btn btn-block">Manage Addresses</a></li>
+                <li><a href="order_form.php" class="btn btn-block">+ New Order</a></li>
+                <li><a href="customer/schedule-pickup.php" class="btn btn-block">Schedule Pickup</a></li>
+                <li><a href="customer/manage-addresses.php" class="btn btn-block">Manage Addresses</a></li>
                 <li><a href="customer/payment-methods.php" class="btn btn-block">Payment Methods</a></li>
             </ul>
         </div>

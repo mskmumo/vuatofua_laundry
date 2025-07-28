@@ -1,6 +1,26 @@
 -- VuaToFua Database Schema
 -- Tech Stack: MySQL
 
+-- Payment Configuration Table: Stores editable payment details
+CREATE TABLE `payment_config` (
+  `config_id` int(11) NOT NULL AUTO_INCREMENT,
+  `config_key` varchar(100) NOT NULL UNIQUE,
+  `config_value` text NOT NULL,
+  `config_description` text DEFAULT NULL,
+  `updated_by` int(11) DEFAULT NULL,
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`config_id`),
+  KEY `idx_config_key` (`config_key`),
+  FOREIGN KEY (`updated_by`) REFERENCES `users`(`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Insert default M-Pesa payment configuration
+INSERT INTO `payment_config` (`config_key`, `config_value`, `config_description`) VALUES
+('mpesa_paybill_number', '522522', 'M-Pesa PayBill business number'),
+('mpesa_account_number', 'VUATOFUA001', 'M-Pesa account number for payments'),
+('payment_delivery_note', 'Payment is collected on delivery. Our team will collect payment when delivering your clean laundry.', 'Note about payment on delivery');
+
 -- Users Table: Stores customer and admin credentials
 CREATE TABLE `users` (
   `user_id` int(11) NOT NULL AUTO_INCREMENT,
@@ -178,6 +198,71 @@ CREATE TABLE `notifications` (
 -- Admin User (password: Admin123)
 INSERT INTO `users` (`name`, `phone`, `email`, `password`, `role`, `email_verified`, `phone_verified`, `status`) VALUES
 ('Admin User', '0700000000', 'admin@vuatofua.com', '$argon2id$v=19$m=65536,t=4,p=3$ZEdWc2RITjBjbVZ1WjNSb$7vF7Iyk4Dfup0RkiOS99Cq0KP9c1qMwTS1pPz8mN8GA', 'admin', 1, 1, 'active');
+
+-- User Addresses Table: Stores customer addresses for pickup/delivery
+CREATE TABLE `user_addresses` (
+  `address_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `address_type` enum('home','office','other') NOT NULL DEFAULT 'home',
+  `address_label` varchar(100) NOT NULL,
+  `street_address` text NOT NULL,
+  `city` varchar(100) NOT NULL,
+  `postal_code` varchar(20) DEFAULT NULL,
+  `landmark` varchar(255) DEFAULT NULL,
+  `phone` varchar(20) DEFAULT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`address_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_is_default` (`is_default`),
+  CONSTRAINT `user_addresses_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Pickup Schedules Table: Stores scheduled pickups
+CREATE TABLE `pickup_schedules` (
+  `pickup_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `address_id` int(11) NOT NULL,
+  `pickup_date` date NOT NULL,
+  `pickup_time_slot` enum('morning','afternoon','evening') NOT NULL,
+  `pickup_time_range` varchar(50) NOT NULL,
+  `service_type` varchar(100) NOT NULL,
+  `estimated_items` int(11) DEFAULT 1,
+  `special_instructions` text DEFAULT NULL,
+  `status` enum('scheduled','confirmed','in_progress','completed','cancelled') NOT NULL DEFAULT 'scheduled',
+  `assigned_staff` int(11) DEFAULT NULL,
+  `pickup_notes` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`pickup_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_address_id` (`address_id`),
+  KEY `idx_pickup_date` (`pickup_date`),
+  KEY `idx_status` (`status`),
+  KEY `idx_assigned_staff` (`assigned_staff`),
+  CONSTRAINT `pickup_schedules_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE,
+  CONSTRAINT `pickup_schedules_ibfk_2` FOREIGN KEY (`address_id`) REFERENCES `user_addresses` (`address_id`) ON DELETE CASCADE,
+  CONSTRAINT `pickup_schedules_ibfk_3` FOREIGN KEY (`assigned_staff`) REFERENCES `users` (`user_id`) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- Payment Methods Table: Stores customer payment methods
+CREATE TABLE `payment_methods` (
+  `payment_id` int(11) NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `card_type` enum('visa','mastercard','amex','discover') NOT NULL,
+  `card_holder` varchar(255) NOT NULL,
+  `masked_number` varchar(20) NOT NULL,
+  `expiry_month` varchar(2) NOT NULL,
+  `expiry_year` varchar(4) NOT NULL,
+  `is_default` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  PRIMARY KEY (`payment_id`),
+  KEY `idx_user_id` (`user_id`),
+  KEY `idx_is_default` (`is_default`),
+  CONSTRAINT `payment_methods_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `users` (`user_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 -- Sample Drop-off Locations
 INSERT INTO `drop_off_locations` (`name`, `address`, `latitude`, `longitude`) VALUES
