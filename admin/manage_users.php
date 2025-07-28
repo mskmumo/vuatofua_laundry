@@ -80,60 +80,175 @@ require_once '../templates/header.php';
 ?>
 
 <style>
-/* Enhanced styling for better visibility and structure */
+/* VuaToFua Project Colors - Dark Theme */
+:root {
+    --dark-bg: #131C21;
+    --title-color: #E5D1B8;
+    --text-color: #FFFFFF;
+    --accent-color: #C4A484;
+    --dark-accent: #1a252b;
+    --light-accent: rgba(196, 164, 132, 0.1);
+    --border-color: rgba(196, 164, 132, 0.2);
+    --success-green: #28a745;
+    --warning-yellow: #ffc107;
+    --danger-red: #dc3545;
+}
+
+/* Global Animations */
+* {
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+/* Enhanced Container */
 .container {
     max-width: 1600px;
     padding: 20px;
     width: 95%;
+    animation: fadeInUp 0.6s ease-out;
 }
 
+/* VuaToFua Card Design */
 .card {
     border: none;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    border-radius: 12px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    border-radius: 10px;
     margin-bottom: 2rem;
     overflow: hidden;
     width: 100%;
+    background: var(--dark-accent);
+    animation: scaleIn 0.5s ease-out;
+    position: relative;
+    border: 1px solid var(--border-color);
 }
 
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-color) 0%, var(--title-color) 100%);
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+    border-color: var(--accent-color);
+}
+
+/* VuaToFua Header */
 .card-header {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: white;
-    border-bottom: none;
-    padding: 1.5rem;
-    border-radius: 12px 12px 0 0;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-accent) 100%);
+    color: var(--title-color);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
+    border-radius: 10px 10px 0 0;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-header::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    right: -50%;
+    width: 100%;
+    height: 200%;
+    background: linear-gradient(45deg, transparent 30%, rgba(196, 164, 132, 0.1) 50%, transparent 70%);
+    transform: rotate(45deg);
+    animation: shimmer 3s infinite;
+}
+
+@keyframes shimmer {
+    0% { transform: translateX(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) rotate(45deg); }
 }
 
 .card-header h5 {
     margin: 0;
     font-weight: 600;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 12px;
+    color: var(--title-color);
+}
+
+.card-header h5 i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    animation: pulse 2s infinite;
 }
 
 .card-body {
     padding: 0;
+    background: var(--dark-accent);
 }
 
-/* Enhanced table styling for better visibility */
+/* Enhanced Table Styling with Animations */
 .table-responsive {
-    border-radius: 0 0 12px 12px;
+    border-radius: 12px;
     overflow: hidden;
-    width: 100%;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+    margin: 0;
+    animation: slideInRight 0.7s ease-out;
 }
 
 .table {
-    margin-bottom: 0;
-    font-size: 0.95rem;
+    margin: 0;
+    background: white;
+    border-collapse: separate;
+    border-spacing: 0;
     width: 100%;
-    table-layout: fixed;
+    font-size: 0.95rem;
 }
 
 .table thead th {
-    background: linear-gradient(135deg, #34495e 0%, #2c3e50 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--dark-bg) 0%, var(--dark-accent) 100%);
+    color: var(--title-color);
     border: none;
     font-weight: 600;
     text-transform: uppercase;
@@ -141,6 +256,24 @@ require_once '../templates/header.php';
     padding: 1rem 0.75rem;
     font-size: 0.85rem;
     white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.table thead th::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+.table thead th:hover::before {
+    left: 100%;
 }
 
 /* Specific column widths for better spacing */
@@ -153,159 +286,197 @@ require_once '../templates/header.php';
 .table th:nth-child(7), .table td:nth-child(7) { width: 13%; } /* Actions */
 
 .table tbody tr {
-    border-bottom: 1px solid #e9ecef;
-    transition: all 0.2s ease;
+    border-bottom: 1px solid #e5e7eb;
+    background: white;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    animation: fadeInUp 0.5s ease-out;
+    animation-fill-mode: both;
 }
 
+.table tbody tr:nth-child(1) { animation-delay: 0.1s; }
+.table tbody tr:nth-child(2) { animation-delay: 0.2s; }
+.table tbody tr:nth-child(3) { animation-delay: 0.3s; }
+.table tbody tr:nth-child(4) { animation-delay: 0.4s; }
+.table tbody tr:nth-child(5) { animation-delay: 0.5s; }
+
 .table tbody tr:hover {
-    background-color: rgba(52, 73, 94, 0.08);
-    transform: none;
-    box-shadow: none;
+    background: linear-gradient(135deg, var(--light-accent) 0%, rgba(196, 164, 132, 0.15) 100%);
+    transform: translateX(4px) scale(1.005);
+    box-shadow: 0 4px 16px rgba(196, 164, 132, 0.2);
+    border-left: 4px solid var(--accent-color);
 }
 
 .table td {
     padding: 1rem 0.75rem;
     vertical-align: middle;
-    border-top: none;
-    white-space: nowrap;
-    color: #ffffff;
+    border-top: 1px solid var(--border-color);
+    color: var(--text-color);
     font-weight: 500;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    position: relative;
+    background: var(--dark-accent);
 }
 
 /* User ID styling */
 .user-id {
-    font-family: 'Courier New', monospace;
-    font-weight: bold;
-    color: #ffffff;
-    background: rgba(255, 255, 255, 0.1);
-    padding: 0.25rem 0.5rem;
-    border-radius: 4px;
+    color: var(--muted-text);
     font-size: 0.85rem;
-}
-
-/* Contact info styling */
-.contact-info {
-    min-width: 250px;
-    max-width: 300px;
-}
-
-.contact-email {
     font-weight: 500;
-    color: #ffffff;
-    margin-bottom: 0.25rem;
-    word-break: break-word;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
 }
 
-.contact-phone {
-    color: #b8c5d1;
-    font-size: 0.85rem;
-}
-
-/* Badge styling */
+/* Enhanced Badge Styling with Animations */
 .badge {
     font-size: 0.75rem;
-    padding: 0.5rem 0.75rem;
-    border-radius: 20px;
-    font-weight: 500;
+    padding: 0.6rem 1rem;
+    border-radius: 25px;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.5px;
+    letter-spacing: 0.8px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 }
 
-.badge-info {
-    background: linear-gradient(135deg, #17a2b8 0%, #138496 100%);
+.badge::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+    transition: left 0.5s;
+}
+
+.badge:hover::before {
+    left: 100%;
+}
+
+.badge:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+.badge-success {
+    background: linear-gradient(135deg, var(--success-green) 0%, #059669 100%);
     color: white;
 }
 
 .badge-warning {
-    background: linear-gradient(135deg, #ffc107 0%, #e0a800 100%);
-    color: #212529;
-}
-
-.badge-success {
-    background: linear-gradient(135deg, #28a745 0%, #1e7e34 100%);
+    background: linear-gradient(135deg, var(--warning-yellow) 0%, #d97706 100%);
     color: white;
 }
 
 .badge-danger {
-    background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
+    background: linear-gradient(135deg, var(--danger-red) 0%, #dc2626 100%);
     color: white;
 }
 
-/* Action buttons styling */
-.action-buttons {
-    min-width: 220px;
-    text-align: center;
+.badge-secondary {
+    background: linear-gradient(135deg, var(--muted-text) 0%, #6b7280 100%);
+    color: white;
 }
 
-.btn {
-    border-radius: 6px;
-    font-weight: 500;
-    transition: all 0.2s ease;
-    border: none;
-    text-decoration: none;
-    display: inline-flex;
+.badge-primary {
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: white;
+}
+
+/* Enhanced Action Buttons with Animations */
+.action-buttons {
+    display: flex;
+    gap: 0.75rem;
     align-items: center;
     justify-content: center;
-    gap: 0.25rem;
+    flex-wrap: wrap;
+    min-width: 280px;
+    max-width: 320px;
+    animation: slideInRight 0.6s ease-out;
 }
 
-.btn-sm {
-    padding: 0.5rem 0.75rem;
-    font-size: 0.8rem;
-    margin: 0.125rem;
-    display: inline-flex;
-    align-items: center;
-    gap: 0.25rem;
-}
-
-.btn-sm:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+/* Modern Button Styling with Micro-interactions */
+.btn {
+    border-radius: 12px;
+    font-weight: 600;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.875rem;
+    border: none;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.3s, height 0.3s;
+}
+
+.btn:hover::before {
+    width: 300px;
+    height: 300px;
+}
+
+.btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+}
+
+.btn:active {
+    transform: translateY(0) scale(0.98);
 }
 
 .btn-primary {
-    background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--accent-color) 0%, #b8956f 100%);
+    color: var(--dark-bg);
+    font-weight: 600;
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, #2980b9 0%, #1f5f8b 100%);
-    color: white;
+    background: linear-gradient(135deg, #b8956f 0%, var(--accent-color) 100%);
+    color: var(--dark-bg);
 }
 
 .btn-success {
-    background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+    background: linear-gradient(135deg, var(--success-green) 0%, #1e7e34 100%);
     color: white;
 }
 
 .btn-success:hover {
-    background: linear-gradient(135deg, #229954 0%, #1e8449 100%);
+    background: linear-gradient(135deg, #1e7e34 0%, var(--success-green) 100%);
     color: white;
 }
 
 .btn-warning {
-    background: linear-gradient(135deg, #f39c12 0%, #e67e22 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--warning-yellow) 0%, #e0a800 100%);
+    color: var(--dark-bg);
+    font-weight: 600;
 }
 
 .btn-warning:hover {
-    background: linear-gradient(135deg, #e67e22 0%, #d35400 100%);
-    color: white;
+    background: linear-gradient(135deg, #e0a800 0%, var(--warning-yellow) 100%);
+    color: var(--dark-bg);
 }
 
 .btn-danger {
-    background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+    background: linear-gradient(135deg, var(--danger-red) 0%, #c82333 100%);
     color: white;
 }
 
 .btn-danger:hover {
-    background: linear-gradient(135deg, #c0392b 0%, #a93226 100%);
+    background: linear-gradient(135deg, #c82333 0%, var(--danger-red) 100%);
     color: white;
 }
 
@@ -319,101 +490,154 @@ require_once '../templates/header.php';
     color: white;
 }
 
-/* Modal enhancements */
+/* Enhanced Modal Styling with Animations */
 .modal {
-    display: none !important; /* Ensure modals are hidden by default */
+    display: none;
+    position: fixed;
+    z-index: 1050;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(4px);
+    animation: fadeIn 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes modalSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
 }
 
 .modal.show {
-    display: block !important; /* Show modal when triggered */
+    display: block;
 }
 
 .modal-dialog {
-    max-width: 800px;
-    width: 90%;
     margin: 1.75rem auto;
-}
-
-.modal-dialog.modal-lg {
-    max-width: 900px;
-    width: 95%;
+    max-width: 650px;
+    width: 90%;
+    position: relative;
+    pointer-events: auto;
+    animation: modalSlideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .modal-content {
-    border: none;
-    border-radius: 12px;
-    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    background: white;
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     overflow: hidden;
     width: 100%;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .modal-header {
-    background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-    color: white;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    color: var(--light-text);
     border-bottom: none;
-    padding: 1.5rem 2rem;
+    padding: 2rem 2.5rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.modal-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+    transition: left 0.5s;
+}
+
+.modal-header:hover::before {
+    left: 100%;
 }
 
 .modal-title {
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.modal-body {
-    padding: 2rem 2.5rem;
-}
-
-.modal-footer {
-    background: #f8f9fa;
-    border-top: 1px solid #e9ecef;
-    padding: 1rem 2.5rem;
-}
-
-.modal-backdrop {
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.modal-backdrop.show {
-    opacity: 0.5;
-}
-
-/* Ensure modal fade animation works properly */
-.modal.fade {
-    opacity: 0;
-    transition: opacity 0.15s linear;
+    font-weight: 700;
+    font-size: 1.5rem;
 }
 
 .modal.fade.show {
     opacity: 1;
 }
 
-/* Form styling */
+/* Enhanced Form Styling with Animations */
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.75rem;
+    animation: fadeInUp 0.5s ease-out;
 }
 
-.form-group label {
-    font-weight: 600;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+.form-label {
+    font-weight: 700;
+    color: var(--dark-bg);
+    margin-bottom: 0.75rem;
+    display: block;
+    font-size: 0.95rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .form-control {
-    border: 2px solid #e9ecef;
-    border-radius: 8px;
-    padding: 0.75rem;
-    transition: all 0.2s ease;
-    font-size: 0.95rem;
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: var(--dark-bg);
+    color: var(--light-text);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
 .form-control:focus {
-    border-color: #007bff;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-control:hover {
+    border-color: var(--secondary-blue);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-select {
+    width: 100%;
+    padding: 1rem 1.25rem;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: white;
+    cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.form-select:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+    box-shadow: 0 0 0 4px rgba(30, 64, 175, 0.1), 0 4px 12px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
+}
+
+.form-select:hover {
+    border-color: var(--secondary-blue);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Alert styling */
@@ -435,6 +659,53 @@ require_once '../templates/header.php';
     background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%);
     border-left-color: #dc3545;
     color: #721c24;
+}
+
+/* Loading Animation */
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+/* Hover Effects for Table Rows */
+.table tbody tr {
+    cursor: pointer;
+}
+
+.table tbody tr:hover .contact-email {
+    color: var(--accent-orange);
+}
+
+.table tbody tr:hover .badge {
+    transform: scale(1.05);
+}
+
+/* Enhanced Close Button */
+.btn-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    padding: 0.5rem;
+    border-radius: 50%;
+}
+
+.btn-close:hover {
+    color: white;
+    background: rgba(255,255,255,0.1);
+    transform: scale(1.1);
 }
 
 /* Responsive design improvements */
@@ -532,6 +803,23 @@ require_once '../templates/header.php';
         white-space: normal;
         word-wrap: break-word;
     }
+    
+    /* Reduce animations on mobile for performance */
+    .card:hover {
+        transform: none;
+    }
+    
+    .table tbody tr:hover {
+        transform: none;
+    }
+    
+    .btn:hover {
+        transform: none;
+    }
+    
+    .badge:hover {
+        transform: none;
+    }
 }
 
 @media (max-width: 576px) {
@@ -573,9 +861,7 @@ require_once '../templates/header.php';
 </style>
 
 <div class="container">
-    <h2 class="mt-4 mb-4">
-        <i class="fas fa-users"></i> User Management
-    </h2>
+    
     
     <?php if(isset($_SESSION['success_message'])): ?>
         <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -583,25 +869,19 @@ require_once '../templates/header.php';
             <?php echo $_SESSION['success_message']; unset($_SESSION['success_message']); ?>
             <button type="button" class="close" data-dismiss="alert" aria-label="Close">
                 <span aria-hidden="true">&times;</span>
-            </button>
         </div>
     <?php endif; ?>
-
-    <?php if(isset($_SESSION['error_message'])): ?>
-        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    
+    <?php if (isset($_SESSION['error_message'])): ?>
+        <div class="alert alert-danger">
             <i class="fas fa-exclamation-triangle"></i>
-            <?php echo $_SESSION['error_message']; unset($_SESSION['error_message']); ?>
-            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-            </button>
+            <?php echo htmlspecialchars($_SESSION['error_message']); unset($_SESSION['error_message']); ?>
         </div>
     <?php endif; ?>
 
     <div class="card">
         <div class="card-header">
-            <h5 class="mb-0">
-                <i class="fas fa-table"></i> All Users
-            </h5>
+            <h5><i class="fas fa-users-cog"></i> User Management</h5>
         </div>
         <div class="card-body">
             <div class="table-responsive">
@@ -624,11 +904,17 @@ require_once '../templates/header.php';
                             <td>
                                 <strong style="color: #ffffff;"><?php echo htmlspecialchars($user['name']); ?></strong>
                             </td>
-                            <td class="contact-info">
-                                <div class="contact-email"><?php echo htmlspecialchars($user['email']); ?></div>
-                                <small class="contact-phone">
-                                    <i class="fas fa-phone fa-xs"></i> <?php echo htmlspecialchars($user['phone']); ?>
-                                </small>
+                            <td>
+                                <div class="contact-info">
+                                    <div class="contact-email">
+                                        <i class="fas fa-envelope"></i>
+                                        <?php echo htmlspecialchars($user['email']); ?>
+                                    </div>
+                                    <div class="contact-phone">
+                                        <i class="fas fa-phone"></i>
+                                        <?php echo htmlspecialchars($user['phone'] ?? 'N/A'); ?>
+                                    </div>
+                                </div>
                             </td>
                             <td>
                                 <span class="badge badge-<?php echo $user['role'] == 'admin' ? 'warning' : 'info'; ?>">
@@ -649,39 +935,44 @@ require_once '../templates/header.php';
                                     <?php echo date('M d, Y', strtotime($user['created_at'])); ?>
                                 </small>
                             </td>
-                            <td class="action-buttons">
-                                <button class="btn btn-sm btn-primary edit-btn" 
-                                        data-user='<?php echo json_encode($user, JSON_HEX_APOS | JSON_HEX_QUOT); ?>' 
-                                        title="Edit User">
-                                    <i class="fas fa-edit"></i> Edit
-                                </button>
-                                
-                                <?php if ($user['account_locked']): ?>
-                                    <form action="manage_users.php" method="POST" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
-                                        <input type="hidden" name="action" value="unlock">
-                                        <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-success" title="Unlock User">
-                                            <i class="fas fa-unlock"></i> Unlock
-                                        </button>
-                                    </form>
-                                <?php else: ?>
-                                    <form action="manage_users.php" method="POST" class="d-inline">
-                                        <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
-                                        <input type="hidden" name="action" value="lock">
-                                        <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
-                                        <button type="submit" class="btn btn-sm btn-warning" title="Lock User">
-                                            <i class="fas fa-lock"></i> Lock
-                                        </button>
-                                    </form>
-                                <?php endif; ?>
-                                
-                                <button class="btn btn-sm btn-danger delete-btn" 
-                                        data-id="<?php echo $user['user_id']; ?>" 
-                                        data-name="<?php echo htmlspecialchars($user['name']); ?>"
-                                        title="Delete User">
-                                    <i class="fas fa-trash"></i> Delete
-                                </button>
+                            <td>
+                                <div class="action-buttons">
+                                    <button type="button" class="btn btn-primary btn-sm edit-btn" 
+                                            data-id="<?php echo $user['user_id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($user['name']); ?>"
+                                            data-email="<?php echo htmlspecialchars($user['email']); ?>"
+                                            data-phone="<?php echo htmlspecialchars($user['phone'] ?? ''); ?>"
+                                            data-role="<?php echo htmlspecialchars($user['role']); ?>"
+                                            data-status="<?php echo htmlspecialchars($user['status']); ?>">
+                                        <i class="fas fa-edit"></i> Edit
+                                    </button>
+                                    
+                                    <?php if ($user['account_locked']): ?>
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                            <input type="hidden" name="action" value="unlock">
+                                            <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
+                                            <button type="submit" class="btn btn-success btn-sm">
+                                                <i class="fas fa-unlock"></i> Unlock
+                                            </button>
+                                        </form>
+                                    <?php else: ?>
+                                        <form method="post" style="display: inline;">
+                                            <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
+                                            <input type="hidden" name="action" value="lock">
+                                            <input type="hidden" name="user_id" value="<?php echo $user['user_id']; ?>">
+                                            <button type="submit" class="btn btn-warning btn-sm">
+                                                <i class="fas fa-lock"></i> Lock
+                                            </button>
+                                        </form>
+                                    <?php endif; ?>
+                                    
+                                    <button type="button" class="btn btn-danger btn-sm delete-btn" 
+                                            data-id="<?php echo $user['user_id']; ?>"
+                                            data-name="<?php echo htmlspecialchars($user['name']); ?>">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </div>
                             </td>
                         </tr>
                         <?php endwhile; ?>
@@ -697,15 +988,13 @@ require_once '../templates/header.php';
     <div class="modal-dialog modal-lg" role="document">
         <div class="modal-content">
             <form action="manage_users.php" method="POST" id="editUserForm">
-                <div class="modal-header">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--accent-color) 0%, #b8956f 100%); color: var(--dark-bg); border-bottom: 1px solid var(--border-color);">
                     <h5 class="modal-title" id="editUserModalLabel">
                         <i class="fas fa-user-edit"></i> Edit User Details
                     </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="background: var(--dark-accent); color: var(--text-color); padding: 2.5rem;">
                     <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <input type="hidden" name="action" value="update_user">
                     <input type="hidden" name="user_id" id="edit-user-id">
@@ -713,20 +1002,20 @@ require_once '../templates/header.php';
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit-name">
-                                    <i class="fas fa-user"></i> Full Name
+                                <label for="edit-name" class="form-label" style="color: var(--title-color); font-weight: 600; margin-bottom: 0.75rem; display: block;">
+                                    <i class="fas fa-user" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Full Name
                                 </label>
                                 <input type="text" name="name" id="edit-name" class="form-control" required 
-                                       placeholder="Enter full name">
+                                       placeholder="Enter full name" style="background: var(--dark-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem;">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit-email">
-                                    <i class="fas fa-envelope"></i> Email Address
+                                <label for="edit-email" class="form-label" style="color: var(--title-color); font-weight: 600; margin-bottom: 0.75rem; display: block;">
+                                    <i class="fas fa-envelope" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Email Address
                                 </label>
                                 <input type="email" name="email" id="edit-email" class="form-control" required 
-                                       placeholder="Enter email address">
+                                       placeholder="Enter email address" style="background: var(--dark-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem;">
                             </div>
                         </div>
                     </div>
@@ -734,42 +1023,42 @@ require_once '../templates/header.php';
                     <div class="row">
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit-phone">
-                                    <i class="fas fa-phone"></i> Phone Number
+                                <label for="edit-phone" class="form-label" style="color: var(--title-color); font-weight: 600; margin-bottom: 0.75rem; display: block;">
+                                    <i class="fas fa-phone" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Phone Number
                                 </label>
                                 <input type="text" name="phone" id="edit-phone" class="form-control" required 
-                                       placeholder="Enter phone number">
+                                       placeholder="Enter phone number" style="background: var(--dark-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem;">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <label for="edit-role">
-                                    <i class="fas fa-user-tag"></i> User Role
+                                <label for="edit-role" class="form-label" style="color: var(--title-color); font-weight: 600; margin-bottom: 0.75rem; display: block;">
+                                    <i class="fas fa-user-tag" style="color: var(--accent-color); margin-right: 0.5rem;"></i> User Role
                                 </label>
-                                <select name="role" id="edit-role" class="form-control">
-                                    <option value="customer">👤 Customer</option>
-                                    <option value="admin">👑 Administrator</option>
+                                <select name="role" id="edit-role" class="form-control" style="background: var(--dark-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem;">
+                                    <option value="customer" style="background: var(--dark-bg); color: var(--text-color);">👤 Customer</option>
+                                    <option value="admin" style="background: var(--dark-bg); color: var(--text-color);">👑 Administrator</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                     
                     <div class="form-group">
-                        <label for="edit-status">
-                            <i class="fas fa-toggle-on"></i> Account Status
+                        <label for="edit-status" class="form-label" style="color: var(--title-color); font-weight: 600; margin-bottom: 0.75rem; display: block;">
+                            <i class="fas fa-toggle-on" style="color: var(--accent-color); margin-right: 0.5rem;"></i> Account Status
                         </label>
-                        <select name="status" id="edit-status" class="form-control">
-                            <option value="active">✅ Active</option>
-                            <option value="inactive">⏸️ Inactive</option>
-                            <option value="suspended">🚫 Suspended</option>
+                        <select name="status" id="edit-status" class="form-control" style="background: var(--dark-bg); color: var(--text-color); border: 2px solid var(--border-color); border-radius: 8px; padding: 0.75rem 1rem;">
+                            <option value="active" style="background: var(--dark-bg); color: var(--text-color);">✅ Active</option>
+                            <option value="inactive" style="background: var(--dark-bg); color: var(--text-color);">⏸️ Inactive</option>
+                            <option value="suspended" style="background: var(--dark-bg); color: var(--text-color);">🚫 Suspended</option>
                         </select>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
+                <div class="modal-footer" style="background: linear-gradient(145deg, var(--dark-bg) 0%, var(--dark-accent) 100%); border-top: 1px solid var(--border-color); padding: 1.5rem 2.5rem;">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; margin-right: 1rem;">
                         <i class="fas fa-times"></i> Cancel
                     </button>
-                    <button type="submit" class="btn btn-primary">
+                    <button type="submit" class="btn btn-primary" style="background: linear-gradient(135deg, var(--accent-color) 0%, #b8956f 100%); color: var(--dark-bg); font-weight: 600;">
                         <i class="fas fa-save"></i> Save Changes
                     </button>
                 </div>
@@ -783,33 +1072,42 @@ require_once '../templates/header.php';
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <form action="manage_users.php" method="POST" id="deleteUserForm">
-                <div class="modal-header">
+                <div class="modal-header" style="background: linear-gradient(135deg, var(--danger-red) 0%, #c82333 100%); color: var(--text-color); border-bottom: 1px solid var(--border-color);">
                     <h5 class="modal-title" id="deleteUserModalLabel">
-                        <i class="fas fa-exclamation-triangle"></i> Confirm User Deletion
+                        <i class="fas fa-user-times"></i> Delete User Account
                     </h5>
-                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
+                    <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close">&times;</button>
                 </div>
-                <div class="modal-body">
+                <div class="modal-body" style="background: var(--dark-accent); color: var(--text-color); padding: 2.5rem;">
                     <div class="text-center">
-                        <i class="fas fa-exclamation-triangle text-danger" style="font-size: 48px; margin-bottom: 20px;"></i>
-                        <h6 style="margin-bottom: 15px;">Are you sure you want to delete this user?</h6>
-                        <p class="text-muted">
-                            <strong id="delete-user-name"></strong><br>
-                            This action cannot be undone. All user data and associated records will be permanently removed.
+                        <div class="warning-icon" style="background: rgba(220, 53, 69, 0.1); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center;">
+                            <i class="fas fa-exclamation-triangle" style="font-size: 2.5rem; color: var(--danger-red);"></i>
+                        </div>
+                        <h4 style="margin-bottom: 1rem; color: var(--title-color); font-weight: 600;">Confirm User Deletion</h4>
+                        <div class="alert alert-danger" style="background: linear-gradient(135deg, #fef2f2 0%, #fecaca 100%); border-left: 5px solid var(--danger-red); color: #991b1b; margin-bottom: 1.5rem;">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Warning:</strong> This action cannot be undone!
+                        </div>
+                        <p style="margin-bottom: 1rem; color: var(--text-color);">Are you sure you want to permanently delete the user account for:</p>
+                        <div class="user-delete-info" style="background: var(--light-accent); border: 1px solid var(--border-color); border-radius: 8px; padding: 1rem; margin: 1rem 0;">
+                            <i class="fas fa-user" style="color: var(--accent-color); margin-right: 0.5rem;"></i>
+                            <strong id="delete-user-name" style="color: var(--title-color);"></strong>
+                        </div>
+                        <p class="text-muted" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem;">
+                            <i class="fas fa-info-circle" style="color: var(--accent-color); margin-right: 0.5rem;"></i>
+                            All user data, orders, and history will be permanently removed.
                         </p>
                     </div>
                 </div>
-                <div class="modal-footer">
+                <div class="modal-footer" style="background: linear-gradient(145deg, var(--dark-bg) 0%, var(--dark-accent) 100%); border-top: 1px solid var(--border-color); padding: 1.5rem 2.5rem;">
                     <input type="hidden" name="csrf_token" value="<?php echo generate_csrf_token(); ?>">
                     <input type="hidden" name="action" value="delete_user">
                     <input type="hidden" name="user_id" id="delete-user-id">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">
-                        <i class="fas fa-times"></i> Cancel
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal" style="background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%); color: white; margin-right: 1rem;">
+                        <i class="fas fa-arrow-left"></i> Cancel
                     </button>
-                    <button type="submit" class="btn btn-danger">
-                        <i class="fas fa-trash"></i> Delete User
+                    <button type="submit" class="btn btn-danger" style="background: linear-gradient(135deg, var(--danger-red) 0%, #c82333 100%); color: white; font-weight: 600;">
+                        <i class="fas fa-trash-alt"></i> Delete Permanently
                     </button>
                 </div>
             </form>
@@ -848,22 +1146,36 @@ function initializeJQueryHandlers() {
         console.log('Edit button clicked');
         
         try {
-            const user = $(this).data('user');
-            console.log('Edit user data:', user);
+            // Get data from individual data attributes
+            const userId = $(this).data('id');
+            const userName = $(this).data('name');
+            const userEmail = $(this).data('email');
+            const userPhone = $(this).data('phone');
+            const userRole = $(this).data('role');
+            const userStatus = $(this).data('status');
             
-            if (!user) {
-                console.error('No user data found');
-                alert('Error: No user data found');
+            console.log('Edit user data:', {
+                id: userId,
+                name: userName,
+                email: userEmail,
+                phone: userPhone,
+                role: userRole,
+                status: userStatus
+            });
+            
+            if (!userId) {
+                console.error('No user ID found');
+                alert('Error: No user ID found');
                 return;
             }
             
             // Populate form fields
-            $('#edit-user-id').val(user.user_id);
-            $('#edit-name').val(user.name);
-            $('#edit-email').val(user.email);
-            $('#edit-phone').val(user.phone);
-            $('#edit-role').val(user.role);
-            $('#edit-status').val(user.status);
+            $('#edit-user-id').val(userId);
+            $('#edit-name').val(userName || '');
+            $('#edit-email').val(userEmail || '');
+            $('#edit-phone').val(userPhone || '');
+            $('#edit-role').val(userRole || 'customer');
+            $('#edit-status').val(userStatus || 'active');
             
             console.log('Form populated, showing modal...');
             
@@ -935,44 +1247,65 @@ function initializeJQueryHandlers() {
 }
 
 function initializeVanillaJS() {
-    console.log('Initializing vanilla JavaScript handlers...');
+    console.log('Initializing vanilla JavaScript modal handlers...');
     
-    // Edit User Modal (Vanilla JS)
+    // Add event listener to the document for event delegation
     document.addEventListener('click', function(e) {
+        console.log('Click detected:', e.target);
+        
         if (e.target.closest('.edit-btn')) {
             e.preventDefault();
             console.log('Edit button clicked (vanilla JS)');
             
             const button = e.target.closest('.edit-btn');
-            const userDataStr = button.getAttribute('data-user');
+            const userId = button.getAttribute('data-id');
+            const userName = button.getAttribute('data-name');
+            const userEmail = button.getAttribute('data-email');
+            const userPhone = button.getAttribute('data-phone');
+            const userRole = button.getAttribute('data-role');
+            const userStatus = button.getAttribute('data-status');
             
             try {
-                const user = JSON.parse(userDataStr);
-                console.log('Edit user data:', user);
+                console.log('Edit user data:', {
+                    id: userId,
+                    name: userName,
+                    email: userEmail,
+                    phone: userPhone,
+                    role: userRole,
+                    status: userStatus
+                });
                 
-                if (!user) {
-                    console.error('No user data found');
-                    alert('Error: No user data found');
+                if (!userId) {
+                    console.error('No user ID found');
+                    alert('Error: No user ID found. Please refresh the page and try again.');
                     return;
                 }
                 
-                // Populate form fields
-                document.getElementById('edit-user-id').value = user.user_id;
-                document.getElementById('edit-name').value = user.name;
-                document.getElementById('edit-email').value = user.email;
-                document.getElementById('edit-phone').value = user.phone;
-                document.getElementById('edit-role').value = user.role;
-                document.getElementById('edit-status').value = user.status;
+                // Validate required fields
+                if (!userName || !userEmail) {
+                    console.warn('Missing user data, using defaults');
+                }
+                
+                // Populate form fields with fallbacks
+                document.getElementById('edit-user-id').value = userId;
+                document.getElementById('edit-name').value = userName || '';
+                document.getElementById('edit-email').value = userEmail || '';
+                document.getElementById('edit-phone').value = userPhone || '';
+                document.getElementById('edit-role').value = userRole || 'customer';
+                document.getElementById('edit-status').value = userStatus || 'active';
                 
                 console.log('Form populated, showing modal...');
                 
                 // Show modal (vanilla JS)
                 const modal = document.getElementById('editUserModal');
-                modal.style.display = 'block';
-                modal.classList.add('show');
-                
-                // Create backdrop
-                createBackdrop();
+                if (modal) {
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    createBackdrop();
+                } else {
+                    console.error('Edit modal not found');
+                    alert('Error: Edit form not available');
+                }
                 
             } catch (error) {
                 console.error('Error opening edit modal:', error);
@@ -989,11 +1322,11 @@ function initializeVanillaJS() {
             const userName = button.getAttribute('data-name');
             
             try {
-                console.log('Delete user:', userId, userName);
+                console.log('Delete user:', { id: userId, name: userName });
                 
                 if (!userId) {
                     console.error('No user ID found');
-                    alert('Error: No user ID found');
+                    alert('Error: No user ID found. Please refresh the page and try again.');
                     return;
                 }
                 
@@ -1005,11 +1338,14 @@ function initializeVanillaJS() {
                 
                 // Show modal (vanilla JS)
                 const modal = document.getElementById('deleteUserModal');
-                modal.style.display = 'block';
-                modal.classList.add('show');
-                
-                // Create backdrop
-                createBackdrop();
+                if (modal) {
+                    modal.style.display = 'block';
+                    modal.classList.add('show');
+                    createBackdrop();
+                } else {
+                    console.error('Delete modal not found');
+                    alert('Error: Delete confirmation not available');
+                }
                 
             } catch (error) {
                 console.error('Error opening delete modal:', error);
@@ -1018,7 +1354,14 @@ function initializeVanillaJS() {
         }
         
         // Close modal when clicking close button or backdrop
-        if (e.target.matches('[data-dismiss="modal"]') || e.target.classList.contains('modal-backdrop')) {
+        if (e.target.matches('[data-dismiss="modal"]') || e.target.classList.contains('modal-backdrop') || e.target.closest('.close')) {
+            closeAllModals();
+        }
+    });
+    
+    // Add keyboard support for closing modals
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
             closeAllModals();
         }
     });
