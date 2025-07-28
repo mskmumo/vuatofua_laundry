@@ -88,7 +88,9 @@ try {
     $delivery_note = 'Payment is collected on delivery. Our team will collect payment when delivering your clean laundry.';
 }
 
-include '../templates/admin_header.php';
+$page_title = 'Payment Settings';
+$is_admin_page = true;
+require_once '../templates/header.php';
 ?>
 
 <div class="main-content">
@@ -218,79 +220,82 @@ include '../templates/admin_header.php';
 .main-content .container {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
-    display: flex;
-    flex-direction: column;
-    gap: 2rem;
+    padding: 0 2rem;
 }
 
 /* Page Header */
 .page-header {
     text-align: center;
-    margin-bottom: 2rem;
-    background: linear-gradient(135deg, var(--dark-accent) 0%, #1a252b 100%);
-    padding: 3rem 2rem;
-    border-radius: 20px;
-    border: 1px solid var(--border-color);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
-    position: relative;
-    overflow: hidden;
+    margin-bottom: 3rem;
     animation: fadeInUp 0.8s ease-out;
 }
 
 .page-header h1 {
+    font-size: 2.5rem;
     color: var(--title-color);
     margin-bottom: 0.5rem;
-    font-size: 2.5rem;
     font-weight: 700;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+}
+
+.page-header h1 i {
+    color: var(--accent-color);
+    font-size: 2.2rem;
 }
 
 .page-header p {
     color: var(--text-color);
-    opacity: 0.9;
+    opacity: 0.8;
     font-size: 1.1rem;
+    max-width: 600px;
+    margin: 0 auto;
 }
 
-/* Cards */
+/* Card Styles */
 .card {
-    background: linear-gradient(135deg, var(--dark-accent) 0%, #1a252b 100%);
-    border-radius: 20px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+    background: rgba(26, 37, 43, 0.8);
     border: 1px solid var(--border-color);
+    border-radius: 20px;
+    margin-bottom: 2rem;
     overflow: hidden;
-    transition: all 0.4s ease;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
     animation: slideInUp 0.6s ease-out;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(196, 164, 132, 0.15);
-}
-
 .card-header {
-    background: linear-gradient(135deg, var(--accent-color) 0%, #b8956a 100%);
-    color: var(--dark-bg);
-    padding: 2rem;
-    position: relative;
+    background: linear-gradient(135deg, var(--dark-accent) 0%, rgba(196, 164, 132, 0.1) 100%);
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.5rem 2rem;
 }
 
 .card-header h3 {
-    margin: 0;
-    font-size: 1.4rem;
+    color: var(--title-color);
+    font-size: 1.3rem;
     font-weight: 600;
-    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.card-header h3 i {
+    color: var(--accent-color);
+    font-size: 1.2rem;
 }
 
 .card-content {
-    padding: 2.5rem;
+    padding: 2rem;
 }
 
-/* Form Styling */
+/* Form Styles */
 .payment-config-form {
     display: flex;
     flex-direction: column;
-    gap: 2rem;
+    gap: 1.5rem;
 }
 
 .form-group {
@@ -302,37 +307,51 @@ include '../templates/admin_header.php';
 .form-group label {
     color: var(--title-color);
     font-weight: 600;
-    font-size: 1.1rem;
+    font-size: 1rem;
     display: flex;
     align-items: center;
     gap: 0.5rem;
 }
 
+.form-group label i {
+    color: var(--accent-color);
+    font-size: 0.9rem;
+}
+
 .form-group input,
 .form-group textarea {
-    padding: 1rem;
+    padding: 1rem 1.5rem;
     border: 2px solid var(--border-color);
     border-radius: 12px;
-    background: rgba(196, 164, 132, 0.05);
+    background: rgba(19, 28, 33, 0.8);
     color: var(--text-color);
     font-size: 1rem;
     transition: all 0.3s ease;
+    font-family: inherit;
 }
 
 .form-group input:focus,
 .form-group textarea:focus {
     outline: none;
     border-color: var(--accent-color);
-    background: rgba(196, 164, 132, 0.1);
-    box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.2);
+    box-shadow: 0 0 0 3px rgba(196, 164, 132, 0.1);
+    background: rgba(19, 28, 33, 0.95);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
 }
 
 .form-group small {
     color: var(--text-color);
     opacity: 0.7;
     font-size: 0.9rem;
+    margin-top: 0.3rem;
 }
 
+/* Form Actions */
 .form-actions {
     display: flex;
     justify-content: center;
@@ -343,13 +362,15 @@ include '../templates/admin_header.php';
     padding: 1rem 2rem;
     border: none;
     border-radius: 12px;
-    font-size: 1.1rem;
+    font-size: 1rem;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    text-decoration: none;
+    font-family: inherit;
 }
 
 .btn-primary {
@@ -382,6 +403,12 @@ include '../templates/admin_header.php';
     background: rgba(196, 164, 132, 0.05);
     border: 1px solid rgba(196, 164, 132, 0.1);
     border-radius: 15px;
+    transition: all 0.3s ease;
+}
+
+.payment-detail-preview:hover {
+    background: rgba(196, 164, 132, 0.08);
+    transform: translateY(-2px);
 }
 
 .detail-icon {
@@ -421,7 +448,13 @@ include '../templates/admin_header.php';
     background: rgba(40, 167, 69, 0.1);
     border: 1px solid rgba(40, 167, 69, 0.2);
     border-radius: 12px;
-    color: #28a745;
+    color: #4CAF50;
+    transition: all 0.3s ease;
+}
+
+.payment-note-preview:hover {
+    background: rgba(40, 167, 69, 0.15);
+    transform: translateY(-1px);
 }
 
 .payment-note-preview i {
@@ -432,6 +465,7 @@ include '../templates/admin_header.php';
 .payment-note-preview p {
     margin: 0;
     font-size: 1rem;
+    line-height: 1.6;
 }
 
 /* Alerts */
@@ -443,18 +477,23 @@ include '../templates/admin_header.php';
     align-items: center;
     gap: 0.5rem;
     animation: slideInDown 0.5s ease-out;
+    font-weight: 500;
 }
 
 .alert-success {
-    background: rgba(40, 167, 69, 0.1);
-    border: 1px solid rgba(40, 167, 69, 0.3);
-    color: #28a745;
+    background: rgba(76, 175, 80, 0.1);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+    color: #4CAF50;
 }
 
 .alert-error {
-    background: rgba(220, 53, 69, 0.1);
-    border: 1px solid rgba(220, 53, 69, 0.3);
-    color: #dc3545;
+    background: rgba(244, 67, 54, 0.1);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+    color: #f44336;
+}
+
+.alert i {
+    font-size: 1.2rem;
 }
 
 /* Responsive Design */
@@ -465,6 +504,12 @@ include '../templates/admin_header.php';
     
     .page-header h1 {
         font-size: 2rem;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .card-content {
+        padding: 1.5rem;
     }
     
     .payment-detail-preview {
@@ -477,6 +522,11 @@ include '../templates/admin_header.php';
         flex-direction: column;
         text-align: center;
         gap: 1rem;
+    }
+    
+    .btn {
+        width: 100%;
+        justify-content: center;
     }
 }
 

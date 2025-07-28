@@ -162,10 +162,13 @@ $base_path = '../';
                     <i class="fas fa-bars"></i>
                 </button>
                 <ul id="nav-menu">
-                    <li><a href="<?php echo $base_path; ?>index.php">Home</a></li>
+                    <?php if (is_logged_in()): ?>
+                        <li><a href="<?php echo $base_path; ?>dashboard.php">Home</a></li>
+                    <?php else: ?>
+                        <li><a href="<?php echo $base_path; ?>index.php">Home</a></li>
+                    <?php endif; ?>
                     <li><a href="<?php echo $base_path; ?>locations.php">Locations</a></li>
                     <?php if (is_logged_in()): ?>
-                        <li><a href="<?php echo $base_path; ?>dashboard.php">Dashboard</a></li>
                         <li><a href="<?php echo $base_path; ?>customer/profile.php">My Profile</a></li>
                         <li><a href="<?php echo $base_path; ?>customer/my_contacts.php">My Contacts</a></li>
                         <li><a href="<?php echo $base_path; ?>customer/change-password.php">Change Password</a></li>

@@ -41,6 +41,7 @@ $base_path = (isset($is_admin_page) && $is_admin_page) ? '../' : './';
                             <li><a href="<?php echo $dashboard_path; ?>">Dashboard</a></li>
                             <li><a href="<?php echo $base_path; ?>admin/manage_orders.php">Manage Orders</a></li>
                             <li><a href="<?php echo $base_path; ?>admin/manage_users.php">Manage Users</a></li>
+                            <li><a href="<?php echo $base_path; ?>admin/manage_pickups.php">Manage Pickups</a></li>
                             <li><a href="<?php echo $base_path; ?>admin/manage_contacts.php">Manage Contacts</a></li>
                             <li><a href="<?php echo $base_path; ?>admin/dropoffs.php">Drop-offs</a></li>
                         <?php else:
